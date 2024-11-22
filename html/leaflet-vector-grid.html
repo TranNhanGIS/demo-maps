@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quick Start - Leaflet</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.min.js"></script>
+
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    .leaflet-container {
+      height: 400px;
+      width: 100%;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+
+
+</head>
+
+<body>
+
+
+
+  <div id="map" style="width: 100%px; height: 100%;"></div>
+  <script>
+
+    const map = L.map('map').setView([21.03865090035212, 105.82868506411747], 13);
+
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M230.1 .8l152 40c8.6 2.3 15.3 9.1 17.3 17.8s-1 17.8-7.8 23.6L368 102.5v8.4c0 10.7-5.3 20.8-15.1 25.2c-24.1 10.8-68.6 24-128.9 24s-104.8-13.2-128.9-24C85.3 131.7 80 121.6 80 110.9v-8.4L56.4 82.2c-6.8-5.8-9.8-14.9-7.8-23.6s8.7-15.6 17.3-17.8l152-40c4-1.1 8.2-1.1 12.2 0zM227 48.6c-1.9-.8-4-.8-5.9 0L189 61.4c-3 1.2-5 4.2-5 7.4c0 17.2 7 46.1 36.9 58.6c2 .8 4.2 .8 6.2 0C257 114.9 264 86 264 68.8c0-3.3-2-6.2-5-7.4L227 48.6zM98.1 168.8c39.1 15 81.5 23.2 125.9 23.2s86.8-8.2 125.9-23.2c1.4 7.5 2.1 15.3 2.1 23.2c0 70.7-57.3 128-128 128s-128-57.3-128-128c0-7.9 .7-15.7 2.1-23.2zM134.4 352c2.8 0 5.5 .9 7.7 2.6l72.3 54.2c5.7 4.3 13.5 4.3 19.2 0l72.3-54.2c2.2-1.7 4.9-2.6 7.7-2.6C387.8 352 448 412.2 448 486.4c0 14.1-11.5 25.6-25.6 25.6H25.6C11.5 512 0 500.5 0 486.4C0 412.2 60.2 352 134.4 352zM352 408c-3.5 0-6.5 2.2-7.6 5.5L339 430.2l-17.4 0c-3.5 0-6.6 2.2-7.6 5.5s.1 6.9 2.9 9L331 454.8l-5.4 16.6c-1.1 3.3 .1 6.9 2.9 9s6.6 2 9.4 0L352 470.1l14.1 10.3c2.8 2 6.6 2.1 9.4 0s4-5.7 2.9-9L373 454.8l14.1-10.2c2.8-2 4-5.7 2.9-9s-4.2-5.5-7.6-5.5l-17.4 0-5.4-16.6c-1.1-3.3-4.1-5.5-7.6-5.5z"/></svg>`
+    // const svgIconUrl = `data:image/svg+xml;base64,${btoa(svgIcon)}`;
+    const svgIconUrl = `https://raw.githubusercontent.com/ttungbmt/fontawesome-pro/refs/heads/main/svgs/solid/user-police.svg`;
+
+    const vectorLayer = L.vectorGrid.protobuf('https://maps.gtelict.vn/geoserver/gwc/service/tms/1.0.0/osm:v_congan_pt@EPSG:900913@pbf/{z}/{x}/{-y}.pbf', {
+      vectorTileLayerStyles: {
+        // Định nghĩa kiểu của các lớp bên trong Vector Tile
+        'v_congan_pt': {
+          fill: true,
+          fillColor: '#00adef',
+          fillOpacity: 0.6,
+          color: '#0077b6',
+          weight: 1,
+          radius: 15
+        },
+        // 'v_congan_pt': { icon: new L.Icon.Default({
+        //   iconUrl: svgIconUrl,
+        //   iconSize: [38, 95],
+        //   iconAnchor: [22, 94],
+        //   popupAnchor: [-3, -76],
+        //   shadowSize: [68, 95],
+        //   shadowAnchor: [22, 94]
+        // })},
+      },
+      interactive: true,
+      maxNativeZoom: 14 // tối đa của zoom native, tuỳ chỉnh theo dữ liệu của bạn
+    }).addTo(map);
+
+    vectorLayer.on('load', function() {
+      
+      vectorLayer.on('click', function(e) {
+        console.log(e)
+        const properties = e.layer.properties; // Thuộc tính của point được nhấp
+        const popupContent = `
+            <b>Thông tin:</b><br>
+            Tên: ${properties.name || 'Không có tên'}<br>
+            Loại: ${properties.type || 'Không có loại'}
+        `;
+
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
+      });
+      
+    })
+
+
+  </script>
+
+
+
+</body>
+
+</html>

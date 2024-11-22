@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js"></script>
+    <script src="https://unpkg.com/protomaps-leaflet@4.0.1/dist/protomaps-leaflet.js"></script>
+    <style>
+      #parent {
+        display: flex;
+      }
+      #leaflet {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="parent">
+      <div id="leaflet"></div>
+    </div>
+    <script>
+      const theme = 'light';
+      const map = L.map('leaflet').setView(
+        [21.03865090035212, 105.82868506411747],
+        13,
+      );
+
+      var styleUrl = 'http://localhost:8081/styles/basic-preview/512/{z}/{x}/{y}.png'
+    //   var styleUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+
+      L.tileLayer(styleUrl, {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+
+      fetch(
+        `http://unpkg.com/protomaps-themes-base@2.0.0-alpha.4/dist/layers/${theme}.json`,
+      )
+        .then((r) => r.json())
+        .then((j) => {
+          const style = {
+            version: 8,
+            glyphs:
+              'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
+            sources: {
+              protomaps: {
+                type: 'vector',
+                tiles: [
+                  'http://localhost:8081/data/v3/{z}/{x}/{y}.pbf',
+                  // 'https://maps.gtelict.vn/geoserver/gwc/service/tms/1.0.0/osm:v_congan_pt@EPSG:900913@pbf/{z}/{x}/{y}.pbf',
+                  // 'https://maps.gtelict.vn/geoserver/osm/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=osm:v_congan_pt&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile&TILECOL={x}&TILEROW={y}'
+                ],
+                maxzoom: 15,
+              },
+            },
+            layers: j,
+          };
+          var gl = L.maplibreGL({
+            style: style,
+          }).addTo(map);
+        });
+    </script>
+  </body>
+</html>

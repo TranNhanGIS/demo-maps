@@ -1,0 +1,15 @@
+/* .leaflet-popup-tip-container {
+  width: 100% !important;
+  left: 20px !important;
+}
+
+.leaflet-popup-tip {
+  width: 100% !important;
+  height: 0 !important;
+  transform: unset !important;
+  background: none !important;
+} */
+
+.leaflet-popup-tip-container {
+  display: none;
+}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+  <head>
+    <title>WebGL</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body,
+      #map {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+
+    <!-- Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <!-- Maplibre GL -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.css"
+      integrity="sha512-qN/uDg9bS3IAldWq4lswyC+9ZSoShtfyNDp+FaJhdtXJqdgubHA+s4nB8BajW0m90Y0+RBGbqu2anzbxiQYdHA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.js"
+      integrity="sha512-dXgoFR02YHJ9Fa29P3D/1umNaZ0EXS2N0w29Lm3b/1BK8UDLMdLWDFwuujIyJJdU27/PLuk3dmS1V9NO8ABX1A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js"></script>
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <script>
+      var leafletMap = L.map('map').setView(
+        [21.03865090035212, 105.82868506411747],
+        13,
+      );
+      
+      var styleUrl = 'http://localhost:8081/styles/basic-preview/style.json'
+      // var styleUrl = 'https://api.maptiler.com/maps/basic/style.json?key=T4DfLbI0eAiaF40FAHJd'
+      // var styleUrl = 'https://maps.gtelots.dev/styles/basic/style.json'
+
+      var gl = L.maplibreGL({
+        padding: 0.1,
+        style: styleUrl,
+        interactive: true,
+      }).addTo(leafletMap);
+
+      var maplibreMap = gl.getMaplibreMap();
+      maplibreMap.dragRotate.disable();
+
+      maplibreMap.on('load', () => {
+        console.log('MAPLIBRE map loaded');
+
+        maplibreMap.addSource('v_congan_pt', {
+          type: 'vector',
+          tiles: [
+            'http://localhost:8081/data/v3/{z}/{x}/{y}.pbf',
+            // 'https://maps.gtelict.vn/geoserver/gwc/service/tms/1.0.0/osm:v_congan_pt@EPSG:900913@pbf/{z}/{x}/{y}.pbf',
+            // 'https://maps.gtelict.vn/geoserver/osm/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=osm:v_congan_pt&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile&TILECOL={x}&TILEROW={y}'
+          ],
+          minzoom: 0,
+          maxzoom: 14,
+        });
+        maplibreMap.addLayer({
+          id: 'v_congan_pt',
+          type: 'fill',
+          source: 'v_congan_pt',
+          'source-layer': 'osm:v_congan_pt', // the name of the layer inside the vector tiles
+          paint: {
+            'fill-color': '#ff0000',
+            'fill-opacity': 1,
+          },
+          layout: {
+            visibility: 'visible',
+          },
+        });
+
+        maplibreMap.on('click', 'v_congan_pt', (e) => {
+          const features = maplibreMap.queryRenderedFeatures(e.point);
+
+          console.log('state-fills mouseenter', e, features);
+        });
+
+        maplibreMap.on('click', (e) => {
+          console.log(maplibreMap.getLayer('v_congan_pt'));
+
+          const features = maplibreMap.queryRenderedFeatures(e.point);
+
+          console.log(features);
+        });
+        // maplibreMap.on('mouseenter', 'state-fills', (e) => {console.log('state-fills mouseenter', e) });
+        // maplibreMap.on('mousemove', 'state-fills', (e) => {console.log('state-fills mousemove', e) });
+        // maplibreMap.on('mouseout', 'state-fills', (e) => {console.log('state-fills mouseout', e) });
+        // maplibreMap.on('mouseleave', 'state-fills', (e) => {console.log('state-fills mouseleave', e) });
+      });
+
+      // now let's see on leaflet map events
+      // SPOILER: they are works
+      // leafletMap.on('mousemove', () => { console.log('LEAFLET mousemove') });
+      // leafletMap.on('mouseenter', () => { console.log('LEAFLET mouseenter') });
+      // leafletMap.on('mouseout', () => { console.log('LEAFLET mouseout') });
+      // leafletMap.on('mouseleave', () => { console.log('LEAFLET mouseleave') });
+      // leafletMap.on('mouseover', () => { console.log('LEAFLET mouseover') });
+    </script>
+  </body>
+</html>
